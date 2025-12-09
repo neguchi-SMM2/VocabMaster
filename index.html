@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>英単語学習</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    body.correct-bg {
+      background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+    }
+
+    body.incorrect-bg {
+      background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 30px 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      color: #333;
+      font-size: 1.8em;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #555;
+      font-size: 1.4em;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    h3 {
+      color: #666;
+      font-size: 1.1em;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    button {
+      font-size: 1em;
+      cursor: pointer;
+      padding: 12px 24px;
+      margin: 8px;
+      border: none;
+      border-radius: 8px;
+      background-color: #667eea;
+      color: white;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    button:hover {
+      background-color: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .word {
+      font-size: 2.2em;
+      margin: 30px 0;
+      color: #333;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .section-list {
+      text-align: left;
+      margin: 20px 0;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .section-item {
+      margin: 12px 0;
+      font-size: 1.1em;
+    }
+
+    .section-item label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background-color 0.2s ease;
+    }
+
+    .section-item label:hover {
+      background-color: #f0f0f0;
+    }
+
+    .section-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-right: 12px;
+      cursor: pointer;
+    }
+
+    .menu {
+      text-align: center;
+    }
+
+    .question {
+      font-size: 2em;
+      margin: 20px 0;
+      color: #333;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .score {
+      text-align: center;
+      font-size: 1.2em;
+      margin-bottom: 20px;
+      color: #555;
+      font-weight: 500;
+    }
+
+    .choices {
+      margin: 20px 0;
+    }
+
+    .choices button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 15px;
+      background-color: #f8f9fa;
+      color: #333;
+      font-size: 1.05em;
+      text-align: left;
+    }
+
+    .choices button:hover {
+      background-color: #e9ecef;
+    }
+
+    .choices button.correct-answer {
+      background-color: #ffd700;
+      color: #333;
+    }
+
+    .choices button:disabled {
+      cursor: default;
+    }
+
+    .answer-feedback {
+      text-align: center;
+      font-size: 1.2em;
+      margin: 20px 0;
+      font-weight: bold;
+      min-height: 30px;
+    }
+
+    #startButton {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      background-color: #4CAF50;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+    }
+
+    #startButton:hover {
+      background-color: #45a049;
+    }
+
+    #backToLevelButton {
+      position: fixed;
+      bottom: 90px;
+      left: 20px;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      background-color: #4CAF50;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+    }
+
+    #backToLevelButton:hover {
+      background-color: #45a049;
+    }
+
+    #clearSelectionsButton {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      background-color: #ff6b6b;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+    }
+
+    #clearSelectionsButton:hover {
+      background-color: #ee5a52;
+    }
+
+    .button-group {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .checkbox-container {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 1.1em;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+
+    .button-left-group {
+      text-align: left;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px 15px;
+      }
+
+      h1 {
+        font-size: 1.5em;
+      }
+
+      h2 {
+        font-size: 1.2em;
+      }
+
+      .word, .question {
+        font-size: 1.6em;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 0.95em;
+      }
+
+      #startButton {
+        bottom: 15px;
+        right: 15px;
+        padding: 12px 24px;
+        font-size: 1em;
+      }
+
+      .section-list {
+        max-height: 1200px;
+      }
+    }
+  </style>
+  <script src="words.js"></script>
+</head>
+<body>
+
+  <!-- モード選択画面 -->
+  <div id="modeMenu" class="container">
+    <h1>英単語学習</h1>
+    <h2>モードを選択してください</h2>
+    <div class="menu">
+      <button onclick="chooseMode('memorize')">暗記モード</button>
+      <button onclick="chooseMode('practice')">実践モード</button>
+    </div>
+  </div>
+
+  <!-- レベル選択画面 -->
+  <div id="levelMenu" class="container hidden">
+    <h2 id="levelModeTitle"></h2>
+    <h3>レベルを選択してください</h3>
+    <div class="menu">
+      <button onclick="chooseLevel(1)">Level 1</button>
+      <button onclick="chooseLevel(2)">Level 2</button><br>
+      <button onclick="chooseLevel(3)">Level 3</button>
+      <button onclick="chooseLevel(4)">Level 4</button><br>
+      <button onclick="chooseLevel(5)">Level 5</button>
+      <button onclick="chooseLevel(6)">Level 6</button>
+    </div>
+    <div class="button-group">
+      <button onclick="backToModeMenu()">モード選択に戻る</button>
+    </div>
+  </div>
+
+  <!-- セクション選択画面 -->
+  <div id="sectionMenu" class="container hidden">
+    <h2 id="selectedModeTitle"></h2>
+    <h3>セクションを選択してください（複数可）</h3>
+    <div id="sectionList"></div>
+    <button id="startButton" onclick="startSelectedMode()">スタート</button>
+    <button id="backToLevelButton" onclick="backToLevelMenu()">レベル選択に戻る</button>
+    <button id="clearSelectionsButton" onclick="clearAllSelections()">選択を全削除</button>
+  </div>
+
+  <!-- 暗記モード画面 -->
+  <div id="memorizeMenu" class="container hidden">
+    <h2>暗記モード</h2>
+    <div class="word" id="memorizeWord"></div>
+    <div class="button-group">
+      <button id="backButton" onclick="backMemorize()">前へ</button>
+      <button id="nextButton" onclick="nextMemorize()">次へ</button>
+      <br>
+      <button onclick="backToSectionMenu()">セクション選択に戻る</button>
+    </div>
+  </div>
+
+  <!-- 実践モード設定画面 -->
+  <div id="practiceMenu" class="container hidden">
+    <h2>実践モード設定</h2>
+    <div class="checkbox-container">
+      <label>
+        <input type="checkbox" id="shuffleOption">
+        シャッフルする
+      </label>
+    </div>
+    <div class="button-group">
+      <button onclick="startPractice()">スタート</button>
+      <br>
+      <button onclick="backToSectionMenu()">セクション選択に戻る</button>
+    </div>
+  </div>
+
+  <!-- 実践問題画面 -->
+  <div id="practiceQuestion" class="container hidden">
+    <div class="question" id="questionWord"></div>
+    <div class="score">正解数: <span id="correctCount">0</span>問<br><span id="currentQuestionIndex">0</span> / <span id="totalCount">0</span></div>
+    <div class="choices" id="choices"></div>
+    <div class="answer-feedback" id="answerFeedback"></div>
+    <div class="button-group">
+      <button id="nextQuestion" onclick="nextQuestion()">次へ</button>
+      <br>
+      <button onclick="backToPracticeMenu()">実践モードメニューに戻る</button>
+    </div>
+  </div>
+
+<script>
+  let selectedMode = '';
+  let selectedLevel = 0;
+  let selectedSections = [];
+  let filteredWords = [];
+  let memorizeIndex = 0;
+  let memorizeStage = 'word';
+  let correctCount = 0;
+  let totalCount = 0;
+  let levelSections = [];
+  let sectionSelections = {};
+
+  // レベルに対応するセクション範囲を取得
+  function getLevelSections(level) {
+    const ranges = {
+      1: [1, 54],
+      2: [55, 114],
+      3: [115, 171],
+      4: [172, 227],
+      5: [228, 278],
+      6: [279, Infinity]
+    };
+    const [start, end] = ranges[level];
+    const sections = [];
+    for (let sec in sectionNames) {
+      const secNum = parseInt(sec);
+      if (secNum >= start && secNum <= end) {
+        sections.push(secNum);
+      }
+    }
+    return sections.sort((a, b) => a - b);
+  }
+
+  // セクションの最初の単語のページ番号を取得
+  function getSectionPage(sectionNum) {
+    const sectionWord = words.find(w => w.section === sectionNum);
+    return sectionWord ? sectionWord.page : '';
+  }
+
+  // セクションリストを表示
+  function generate_SectionList() {
+    const sectionList = document.getElementById('sectionList');
+    sectionList.innerHTML = '';
+    
+    levelSections.forEach(sec => {
+      const div = document.createElement('div');
+      div.className = 'section-item';
+      const checked = sectionSelections[sec] ? 'checked' : '';
+      const pageNum = getSectionPage(sec);
+      const pageText = pageNum ? ` (p${pageNum})` : '';
+      div.innerHTML = `<label><input type="checkbox" value="${sec}" ${checked}> ${sectionNames[sec]}${pageText}</label>`;
+      sectionList.appendChild(div);
+    });
+    
+    // チェックボックスの変更をリアルタイムで保存
+    document.querySelectorAll('#sectionList input[type="checkbox"]').forEach(input => {
+      input.addEventListener('change', (e) => {
+        const sec = parseInt(e.target.value);
+        sectionSelections[sec] = e.target.checked;
+      });
+    });
+  }
+
+  function chooseMode(mode) {
+    selectedMode = mode;
+    document.getElementById('modeMenu').classList.add('hidden');
+    document.getElementById('levelMenu').classList.remove('hidden');
+    document.getElementById('levelModeTitle').textContent =
+      mode === 'memorize' ? '暗記モード - レベル選択' : '実践モード - レベル選択';
+  }
+
+  function chooseLevel(level) {
+    selectedLevel = level;
+    levelSections = getLevelSections(level);
+    document.getElementById('levelMenu').classList.add('hidden');
+    document.getElementById('sectionMenu').classList.remove('hidden');
+    document.getElementById('selectedModeTitle').textContent =
+      selectedMode === 'memorize' ? `暗記モード - Level ${level} セクション選択` : `実践モード - Level ${level} セクション選択`;
+    generate_SectionList();
+  }
+
+  function clearAllSelections() {
+    sectionSelections = {};
+    generate_SectionList();
+  }
+
+  function backToModeMenu() {
+    document.getElementById('modeMenu').classList.remove('hidden');
+    document.getElementById('levelMenu').classList.add('hidden');
+    document.getElementById('sectionMenu').classList.add('hidden');
+    sectionSelections = {};
+    document.body.className = '';
+  }
+
+  function backToLevelMenu() {
+    document.getElementById('levelMenu').classList.remove('hidden');
+    document.getElementById('sectionMenu').classList.add('hidden');
+    sectionSelections = {};
+  }
+
+  function backToSectionMenu() {
+    document.getElementById('memorizeMenu').classList.add('hidden');
+    document.getElementById('practiceMenu').classList.add('hidden');
+    document.getElementById('practiceQuestion').classList.add('hidden');
+    document.getElementById('sectionMenu').classList.remove('hidden');
+    memorizeIndex = 0;
+    memorizeStage = 'word';
+    generate_SectionList();
+    document.body.className = '';
+  }
+
+  function backToPracticeMenu() {
+    document.getElementById('practiceQuestion').classList.add('hidden');
+    document.getElementById('practiceMenu').classList.remove('hidden');
+    document.body.className = '';
+  }
+
+  function getSelectedSections() {
+    return Object.keys(sectionSelections)
+      .filter(sec => sectionSelections[sec])
+      .map(sec => parseInt(sec));
+  }
+
+  function startSelectedMode() {
+    selectedSections = getSelectedSections();
+    if (selectedSections.length === 0) {
+      alert("セクションを選択してください");
+      return;
+    }
+    filteredWords = words.filter(w => selectedSections.includes(w.section));
+    if (selectedMode === 'memorize') {
+      startMemorize();
+    } else if (selectedMode === 'practice') {
+      startPracticeMenu();
+    }
+  }
+
+  function startMemorize() {
+    document.getElementById('sectionMenu').classList.add('hidden');
+    document.getElementById('memorizeMenu').classList.remove('hidden');
+    memorizeIndex = 0;
+    memorizeStage = 'word';
+    document.getElementById('nextButton').disabled = false;
+    showMemorize();
+  }
+
+  function showMemorize() {
+    if (memorizeIndex >= filteredWords.length) {
+      document.getElementById('memorizeWord').innerHTML = "お疲れさまでした！";
+      document.getElementById('nextButton').disabled = true;
+      return;
+    }
+    document.getElementById('nextButton').disabled = false;
+    const current = filteredWords[memorizeIndex];
+    document.getElementById('memorizeWord').innerHTML = memorizeStage === 'word' ? current.word : current.meaning;
+  }
+
+  function nextMemorize() {
+    if (memorizeStage === 'word') {
+      memorizeStage = 'meaning';
+    } else {
+      memorizeStage = 'word';
+      memorizeIndex++;
+    }
+    showMemorize();
+  }
+
+  function backMemorize() {
+    if (memorizeStage === 'meaning') {
+      memorizeStage = 'word';
+    } else {
+      if (memorizeIndex > 0) {
+        memorizeIndex--;
+        memorizeStage = 'meaning';
+      }
+    }
+    showMemorize();
+  }
+
+  function startPracticeMenu() {
+    document.getElementById('sectionMenu').classList.add('hidden');
+    document.getElementById('practiceMenu').classList.remove('hidden');
+  }
+
+  let practiceWords = [];
+  let currentQuestionIndex = 0;
+  let currentCorrectAnswer = '';
+  let currentQuestionType = 'word'; // 'word' または 'meaning'
+
+  function startPractice() {
+    const shuffle = document.getElementById('shuffleOption').checked;
+    
+    practiceWords = [];
+    
+    // 通常の問題（英語→日本語）を追加
+    filteredWords.forEach(word => {
+      practiceWords.push({
+        ...word,
+        questionType: 'word'
+      });
+    });
+    
+    // 逆問題（日本語→英語）を必ず追加
+    filteredWords.forEach(word => {
+      practiceWords.push({
+        ...word,
+        questionType: 'meaning'
+      });
+    });
+    
+    if (shuffle) {
+      practiceWords.sort(() => Math.random() - 0.5);
+    }
+    
+    currentQuestionIndex = 0;
+    document.getElementById('practiceMenu').classList.add('hidden');
+    document.getElementById('practiceQuestion').classList.remove('hidden');
+    setAnswerFeedback('', false);
+    correctCount = 0;
+    totalCount = practiceWords.length;
+    document.getElementById('correctCount').textContent = correctCount;
+    document.getElementById('totalCount').textContent = totalCount;
+    document.getElementById('nextQuestion').disabled = true;
+    document.getElementById('currentQuestionIndex').textContent = currentQuestionIndex + 1;
+    showPracticeQuestion();
+  }
+
+  function setAnswerFeedback(message, isCorrect) {
+    const feedbackDiv = document.getElementById('answerFeedback');
+    feedbackDiv.textContent = message;
+    feedbackDiv.style.color = isCorrect ? '#2d6a2d' : '#c62828';
+  }
+
+  function showPracticeQuestion() {
+    if (currentQuestionIndex >= practiceWords.length) {
+      document.getElementById('questionWord').innerHTML = "全問終了！";
+      document.getElementById('choices').innerHTML = "";
+      setAnswerFeedback(`最終スコア: ${correctCount} / ${totalCount}`, correctCount === totalCount);
+      return;
+    }
+    const current = practiceWords[currentQuestionIndex];
+    currentQuestionType = current.questionType;
+    
+    // 問題の種類によって表示を変更
+    let questionText, correctAnswer, allChoices;
+    
+    if (currentQuestionType === 'word') {
+      // 英語→日本語
+      questionText = current.word;
+      correctAnswer = current.meaning;
+      allChoices = words.map(w => w.meaning);
+    } else {
+      // 日本語→英語
+      questionText = current.meaning;
+      correctAnswer = current.word;
+      allChoices = words.map(w => w.word);
+    }
+    
+    currentCorrectAnswer = correctAnswer;
+    document.getElementById('questionWord').innerHTML = questionText;
+
+    // 選択肢を作成
+    let options = [correctAnswer];
+    while (options.length < 4) {
+      let rand = allChoices[Math.floor(Math.random() * allChoices.length)];
+      if (!options.includes(rand)) options.push(rand);
+    }
+    options.sort(() => Math.random() - 0.5);
+
+    const choicesDiv = document.getElementById('choices');
+    choicesDiv.innerHTML = '';
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.textContent = opt;
+      btn.onclick = () => {
+        // すべてのボタンを無効化
+        Array.from(choicesDiv.children).forEach(b => b.disabled = true);
+        
+        // 正解のボタンを黄色に
+        Array.from(choicesDiv.children).forEach(b => {
+          if (b.textContent === correctAnswer) {
+            b.classList.add('correct-answer');
+          }
+        });
+
+        if (opt === correctAnswer) {
+          setAnswerFeedback("正解！", true);
+          document.body.className = 'correct-bg';
+          correctCount++;
+          document.getElementById('correctCount').textContent = correctCount;
+        } else {
+          setAnswerFeedback(`不正解！正解は：${correctAnswer}`, false);
+          document.body.className = 'incorrect-bg';
+        }
+        document.getElementById('nextQuestion').disabled = false;
+      };
+      choicesDiv.appendChild(btn);
+    });
+  }
+
+  function nextQuestion() {
+    document.body.className = '';
+    currentQuestionIndex++;
+    showPracticeQuestion();
+    setAnswerFeedback('', false);
+    document.getElementById('nextQuestion').disabled = true;
+    if (currentQuestionIndex < totalCount) {
+      document.getElementById('currentQuestionIndex').textContent = currentQuestionIndex + 1;
+    }
+  }
+</script>
+
+</body>
+</html>
