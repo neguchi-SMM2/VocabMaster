@@ -285,7 +285,7 @@
         font-size: 1em;
       }
 
-      #buttons {
+      .button-group {
        text-align: center; 
       }
 
@@ -327,13 +327,17 @@
 
   <!-- セクション選択画面 -->
   <div id="sectionMenu" class="container hidden">
-    <button id="buttons" onclick="backToLevelMenu()">レベル選択に戻る</button>
-    <button id="buttons" onclick="clearAllSelections()">選択を全削除</button>
-    <h2 id="selectedModeTitle"></h2>
+    <div class="button-group">
+      <button onclick="backToLevelMenu()">レベル選択に戻る</button>
+      <button onclick="clearAllSelections()">選択を全削除</button>
+    </div>
+      <h2 id="selectedModeTitle"></h2>
     <h3>セクションを選択してください（複数可）</h3>
     <div id="sectionList"></div>
-    <button id="buttons" onclick="startSelectedMode()">スタート</button>
-  </div>
+    <div class"="button-group">
+      <button onclick="startSelectedMode()">スタート</button>
+    </div>
+    </div>
 
   <!-- 暗記モード画面 -->
   <div id="memorizeMenu" class="container hidden">
