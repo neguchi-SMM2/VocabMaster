@@ -285,6 +285,10 @@
         font-size: 1em;
       }
 
+      #buttons {
+       text-align: center; 
+      }
+
       .section-list {
         max-height: 1200px;
       }
@@ -323,12 +327,12 @@
 
   <!-- セクション選択画面 -->
   <div id="sectionMenu" class="container hidden">
-    <button onclick="backToLevelMenu()">レベル選択に戻る</button>
-    <button onclick="clearAllSelections()">選択を全削除</button>
+    <button id="buttons" onclick="backToLevelMenu()">レベル選択に戻る</button>
+    <button id="buttons" onclick="clearAllSelections()">選択を全削除</button>
     <h2 id="selectedModeTitle"></h2>
     <h3>セクションを選択してください（複数可）</h3>
     <div id="sectionList"></div>
-    <button onclick="startSelectedMode()">スタート</button>
+    <button id="buttons" onclick="startSelectedMode()">スタート</button>
   </div>
 
   <!-- 暗記モード画面 -->
